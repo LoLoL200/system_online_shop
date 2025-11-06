@@ -186,7 +186,18 @@ func placeOrder(store *Store) {
 
 func shopping(store *Store) {
 	clientID := getIntInput("Введіть ID клієнта для перегляду кошика: ")
-
+	//  Does the client exist?
+	var clientExists bool
+	for _, c := range store.Customers {
+		if c.ID == clientID {
+			clientExists = true
+			break
+		}
+	}
+	if !clientExists {
+		fmt.Println("Клієнта з таким ID не знайдено.")
+		return
+	}
 	// Check for card to client
 	cart, exists := store.Carts[clientID]
 	if !exists {
@@ -383,7 +394,21 @@ func addShopping(store *Store) {
 
 func shoppingCard(store *Store) {
 	fmt.Println("============================ Меню кошика ============================")
-	getIntInput("Ведіть ID клієнта:")
+	clientID := getIntInput("Ведіть ID клієнта:")
+
+	clientExists := false
+	for _, c := range store.Customers {
+		if c.ID == clientID {
+			clientExists = true
+			break
+		}
+	}
+
+	if !clientExists {
+		fmt.Println(" Клієнта з таким ID не знайдено. Повернення до головного меню.")
+		return
+	}
+
 	fmt.Printf("1. Додати товар до кошика\n2. Видалити товар з кошика\n3. Переглянути кошик\n4. Застосувати знижку\n5. Оформити замовлення\n6. Повернутися до головного меню\n")
 	inputCard := getIntInput("> ")
 	switch inputCard {
@@ -475,7 +500,7 @@ func addClient(store *Store) {
 	}
 
 	client := Client{
-		ID:     len(store.Customers) + 1,
+		ID:     len(store.Customers),
 		Name:   nameClient,
 		Status: status,
 	}
@@ -507,7 +532,7 @@ func menuClient(store *Store) {
 
 // Search product by Category
 func searchByCategory(store *Store) {
-	searchID := getTextInput("Введіть ID продука:")
+	searchID := getTextInput("Введіть категорію продука:")
 
 	found := false
 	for _, product := range store.Products {
@@ -599,7 +624,7 @@ func updateProduct(store *Store) {
 	product.Price = newPrice
 	product.Stock = newStock
 
-	fmt.Println("✅ Товар успішно оновлено!")
+	fmt.Println(" Товар успішно оновлено!")
 	fmt.Printf("ID: %d\nНазва: %s\nНова ціна: %.2f грн\nНова кількість: %d шт\n",
 		product.ID, product.Name, product.Price, product.Stock)
 }
